@@ -20,10 +20,10 @@ def main():
     # Load environment variables
     load_dotenv()
     
-    # Check if OpenAI API key is set
-    if not os.getenv("OPENAI_API_KEY"):
-        print("\n❌ Error: OPENAI_API_KEY not found in .env file")
-        print("Please add your OpenAI API key to the .env file")
+    # Check if Google API key is set
+    if not os.getenv("GOOGLE_API_KEY"):
+        print("\n❌ Error: GOOGLE_API_KEY not found in .env file")
+        print("Please add your Google Gemini API key to the .env file")
         return
     
     print("\n✓ Environment variables loaded")
