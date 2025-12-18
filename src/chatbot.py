@@ -60,21 +60,30 @@ class NCDChatbot:
         self.prompt_template = """You are a medical information assistant specializing in non-communicable diseases (NCDs). 
 Your role is to provide accurate, helpful information about diseases like diabetes, cancer, heart disease, obesity, and high blood pressure.
 
-Use the following pieces of context to answer the question at the end. If you don't know the answer based on the context, 
-say that you don't have enough information to answer accurately. Don't make up information.
+IMPORTANT INSTRUCTIONS:
+- Respond in PLAIN TEXT only. Do NOT use Markdown formatting (no **, no *, no #)
+- Use simple text for section headers ending with colon
+- Use bullet symbol • for lists
+- Never mention "context", "provided information", or reference system limitations
+- If information is incomplete, naturally say "I don't have complete information about that aspect" within your answer
+
+Use the following context to answer the question:
 
 Context:
 {context}
 
 Question: {question}
 
-Answer: Provide a clear, well-structured answer based on the context above. Format your response as follows:
-- Start with a brief definition or overview (1-2 sentences)
-- Use bullet points (•) to list key information
-- Break down complex information into separate paragraphs
-- Include relevant details about symptoms, risk factors, prevention, or treatment
-- Keep each point concise and easy to read
-- Use double line breaks between sections for better readability"""
+Answer format:
+1. Start with a clear 1-2 sentence definition/overview
+2. Add a blank line
+3. Use section headers in plain text (e.g., "Common symptoms:", "Where it can start:")
+4. List items with • bullet symbol, one per line
+5. Keep each bullet point concise
+6. Add blank line between sections
+7. End with: "Note: This is educational information. Always consult a healthcare professional for medical advice."
+
+Keep response focused, scannable, and limited to 3-4 key sections."""
 
         self.prompt = PromptTemplate(
             template=self.prompt_template,
