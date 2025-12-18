@@ -1,7 +1,17 @@
+# Backend Dependencies
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.10.0
+
+# RAG & LLM
 langchain==1.2.0
 langchain-community
 langchain-google-genai
+
+# Vector Database
 chromadb==1.3.7
+
+# Utilities
 python-dotenv==1.2.1
 pypdf==5.2.0
 sentence-transformers

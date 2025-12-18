@@ -5,7 +5,7 @@ Uses LangChain to combine retrieval and generation with Google Gemini.
 
 import os
 from typing import Optional
-from langchain.chains import RetrievalQA
+from langchain_classic.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ class NCDChatbot:
     
     def __init__(
         self,
-        model_name: str = "gemini-pro",
+        model_name: str = "models/gemini-2.5-flash",
         temperature: float = 0.7,
         google_api_key: Optional[str] = None
     ):
@@ -60,16 +60,30 @@ class NCDChatbot:
         self.prompt_template = """You are a medical information assistant specializing in non-communicable diseases (NCDs). 
 Your role is to provide accurate, helpful information about diseases like diabetes, cancer, heart disease, obesity, and high blood pressure.
 
-Use the following pieces of context to answer the question at the end. If you don't know the answer based on the context, 
-say that you don't have enough information to answer accurately. Don't make up information.
+IMPORTANT INSTRUCTIONS:
+- Respond in PLAIN TEXT only. Do NOT use Markdown formatting (no **, no *, no #)
+- Use simple text for section headers ending with colon
+- Use bullet symbol • for lists
+- Never mention "context", "provided information", or reference system limitations
+- If information is incomplete, naturally say "I don't have complete information about that aspect" within your answer
+
+Use the following context to answer the question:
 
 Context:
 {context}
 
 Question: {question}
 
-Answer: Provide a clear, informative answer based on the context above. Include relevant details about symptoms, 
-risk factors, prevention, or treatment as applicable to the question."""
+Answer format:
+1. Start with a clear 1-2 sentence definition/overview
+2. Add a blank line
+3. Use section headers in plain text (e.g., "Common symptoms:", "Where it can start:")
+4. List items with • bullet symbol, one per line
+5. Keep each bullet point concise
+6. Add blank line between sections
+7. End with: "Note: This is educational information. Always consult a healthcare professional for medical advice."
+
+Keep response focused, scannable, and limited to 3-4 key sections."""
 
         self.prompt = PromptTemplate(
             template=self.prompt_template,
