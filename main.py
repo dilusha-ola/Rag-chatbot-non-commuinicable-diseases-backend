@@ -34,7 +34,7 @@ def main():
         print("=" * 70)
         print(f"\n{str(e)}")
         print("\nPlease check:")
-        print("  1. Your OPENAI_API_KEY is set in the .env file")
+        print("  1. Your GOOGLE_API_KEY is set in the .env file")
         print("  2. You have run: python -m src.setup")
         print("  3. The 'data' folder contains PDF files")
         sys.exit(1)

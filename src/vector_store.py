@@ -5,9 +5,9 @@ Handles document embedding and similarity search.
 
 import os
 from typing import List, Optional
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 
 class VectorStoreManager:
@@ -16,8 +16,7 @@ class VectorStoreManager:
     def __init__(
         self,
         persist_directory: str = "chroma_db",
-        collection_name: str = "ncd_diseases",
-        openai_api_key: Optional[str] = None
+        collection_name: str = "ncd_diseases"
     ):
         """
         Initialize the vector store manager.
@@ -25,16 +24,15 @@ class VectorStoreManager:
         Args:
             persist_directory: Directory to persist ChromaDB data
             collection_name: Name of the ChromaDB collection
-            openai_api_key: OpenAI API key for embeddings
         """
         self.persist_directory = persist_directory
         self.collection_name = collection_name
         
-        # Set up OpenAI embeddings
-        if openai_api_key:
-            os.environ["OPENAI_API_KEY"] = openai_api_key
-        
-        self.embeddings = OpenAIEmbeddings()
+        # Use free HuggingFace embeddings
+        print("Loading embedding model (this may take a moment on first run)...")
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
         self.vector_store = None
     
     def create_vector_store(self, documents: List[Document]) -> Chroma:

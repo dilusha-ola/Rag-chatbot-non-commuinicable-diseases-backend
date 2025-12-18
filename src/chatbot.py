@@ -1,13 +1,13 @@
 """
 RAG Chatbot module for answering questions about non-communicable diseases.
-Uses LangChain to combine retrieval and generation.
+Uses LangChain to combine retrieval and generation with Google Gemini.
 """
 
 import os
 from typing import Optional
 from langchain.chains import RetrievalQA
-from langchain_community.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 from src.vector_store import VectorStoreManager
 
@@ -17,31 +17,32 @@ class NCDChatbot:
     
     def __init__(
         self,
-        model_name: str = "gpt-3.5-turbo",
+        model_name: str = "gemini-pro",
         temperature: float = 0.7,
-        openai_api_key: Optional[str] = None
+        google_api_key: Optional[str] = None
     ):
         """
         Initialize the chatbot.
         
         Args:
-            model_name: OpenAI model to use
+            model_name: Google Gemini model to use
             temperature: Response creativity (0-1)
-            openai_api_key: OpenAI API key
+            google_api_key: Google API key
         """
         # Load environment variables
         load_dotenv()
         
-        if openai_api_key:
-            os.environ["OPENAI_API_KEY"] = openai_api_key
+        if google_api_key:
+            os.environ["GOOGLE_API_KEY"] = google_api_key
         
         self.model_name = model_name
         self.temperature = temperature
         
-        # Initialize LLM
-        self.llm = ChatOpenAI(
-            model_name=self.model_name,
-            temperature=self.temperature
+        # Initialize Gemini LLM
+        self.llm = ChatGoogleGenerativeAI(
+            model=self.model_name,
+            temperature=self.temperature,
+            convert_system_message_to_human=True
         )
         
         # Initialize vector store manager
