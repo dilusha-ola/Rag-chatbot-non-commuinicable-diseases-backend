@@ -151,6 +151,206 @@ console.log(data.answer);
 
 Visit http://localhost:8000/health to see if everything is working properly.
 
+## Testing
+
+The project includes comprehensive unit and integration tests.
+
+### Running Tests
+
+1. Activate the virtual environment:
+   ```bash
+   # Windows
+   venv\Scripts\activate
+   
+   # Mac/Linux
+   source venv/bin/activate
+   ```
+
+2. Run all tests:
+   ```bash
+   pytest -v
+   ```
+
+3. Run tests with coverage:
+   ```bash
+   pytest --cov=src --cov=app tests/
+   ```
+
+4. Run specific test file:
+   ```bash
+   pytest tests/test_api.py -v
+   ```
+
+### Test Coverage
+
+- **API Endpoints** (`tests/test_api.py`): Tests all REST API endpoints, request/response validation, error handling, and CORS
+- **Chatbot Logic** (`tests/test_chatbot.py`): Tests chatbot initialization and question answering
+- **Vector Store** (`tests/test_vector_store.py`): Tests document storage and retrieval
+- **Integration Tests** (`test_backend.py`): End-to-end tests with running server
+
+### Test Results
+
+All 13 tests should pass:
+- 8 API endpoint tests
+- 3 chatbot tests
+- 2 vector store tests
+
+For more details, see [TESTING.md](TESTING.md)
+
+## API Documentation for Postman Testing
+
+You can test all endpoints using Postman or any HTTP client.
+
+### Base URL
+```
+http://localhost:8000
+```
+
+### Endpoints
+
+#### 1. Root Endpoint
+**GET** `/`
+- **Description**: Check if API is running
+- **Response**:
+  ```json
+  {
+    "status": "ok",
+    "message": "NCD RAG Chatbot API is running"
+  }
+  ```
+
+#### 2. Health Check
+**GET** `/health`
+- **Description**: Check server and chatbot health
+- **Response**:
+  ```json
+  {
+    "status": "healthy",
+    "message": "Chatbot is ready"
+  }
+  ```
+
+#### 3. Chat Endpoint (Main)
+**POST** `/chat`
+- **Description**: Ask a question and get an answer
+- **Headers**:
+  ```
+  Content-Type: application/json
+  ```
+- **Request Body**:
+  ```json
+  {
+    "question": "What are the symptoms of diabetes?",
+    "return_sources": false
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "answer": "Common symptoms of diabetes include...",
+    "sources": null
+  }
+  ```
+
+#### 4. Chat with Sources
+**POST** `/chat`
+- **Request Body**:
+  ```json
+  {
+    "question": "What is hypertension?",
+    "return_sources": true
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "answer": "Hypertension, or high blood pressure...",
+    "sources": [
+      {
+        "source": "document.pdf",
+        "content": "Relevant excerpt from the document..."
+      }
+    ]
+  }
+  ```
+
+#### 5. Interactive API Documentation
+**GET** `/docs`
+- **Description**: Swagger UI for testing all endpoints in browser
+- **URL**: http://localhost:8000/docs
+
+### Postman Collection Setup
+
+1. Create a new collection called "NCD Chatbot API"
+2. Set collection variable `baseUrl` = `http://localhost:8000`
+3. Add the following requests:
+
+**Request 1: Root**
+- Method: GET
+- URL: `{{baseUrl}}/`
+
+**Request 2: Health Check**
+- Method: GET
+- URL: `{{baseUrl}}/health`
+
+**Request 3: Ask Question**
+- Method: POST
+- URL: `{{baseUrl}}/chat`
+- Body (raw JSON):
+  ```json
+  {
+    "question": "What is diabetes?",
+    "return_sources": false
+  }
+  ```
+
+**Request 4: Ask Question with Sources**
+- Method: POST
+- URL: `{{baseUrl}}/chat`
+- Body (raw JSON):
+  ```json
+  {
+    "question": "What causes heart disease?",
+    "return_sources": true
+  }
+  ```
+
+### Error Responses
+
+**400 Bad Request** - Empty question:
+```json
+{
+  "detail": "Question cannot be empty"
+}
+```
+
+**422 Validation Error** - Missing required field:
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "question"],
+      "msg": "field required",
+      "type": "value_error.missing"
+    }
+  ]
+}
+```
+
+**500 Internal Server Error** - Processing error:
+```json
+{
+  "detail": "Error processing question: [error message]"
+}
+```
+
+**503 Service Unavailable** - Vector store not initialized:
+```json
+{
+  "detail": "Vector store not initialized. Please run setup first."
+}
+```
+
 ## Common Issues
 
 **Problem: Server won't start**
