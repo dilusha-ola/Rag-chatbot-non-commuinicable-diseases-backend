@@ -26,6 +26,7 @@ class TestVectorStoreManager:
         mock_db.as_retriever.return_value = Mock()
         
         manager = VectorStoreManager()
+        manager.vector_store = mock_db  # Set the vector store directly
         retriever = manager.get_retriever()
         assert retriever is not None
         mock_db.as_retriever.assert_called_once()

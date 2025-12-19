@@ -3,8 +3,10 @@ Unit tests for FastAPI endpoints.
 Run with: pytest tests/test_api.py
 """
 
+import os
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import patch
 from app import app
 
 client = TestClient(app)
@@ -29,8 +31,12 @@ class TestAPIEndpoints:
         assert "status" in data
         assert "message" in data
     
-    def test_chat_endpoint_with_valid_question(self):
+    @patch('app.get_chatbot')
+    def test_chat_endpoint_with_valid_question(self, mock_get_chatbot):
         """Test chat endpoint with a valid question."""
+        mock_chatbot_instance = mock_get_chatbot.return_value
+        mock_chatbot_instance.ask.return_value = {"answer": "Diabetes is a chronic disease."}
+        
         response = client.post(
             "/chat",
             json={"question": "What is diabetes?"}
@@ -49,8 +55,15 @@ class TestAPIEndpoints:
         )
         assert response.status_code == 400
     
-    def test_chat_endpoint_with_sources(self):
+    @patch('app.get_chatbot')
+    def test_chat_endpoint_with_sources(self, mock_get_chatbot):
         """Test chat endpoint can return sources."""
+        mock_chatbot_instance = mock_get_chatbot.return_value
+        mock_chatbot_instance.ask.return_value = {
+            "answer": "Diabetes is a chronic disease.",
+            "sources": [{"source": "test.pdf", "content": "Test content"}]
+        }
+        
         response = client.post(
             "/chat",
             json={"question": "What is diabetes?", "return_sources": True}
