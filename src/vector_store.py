@@ -105,6 +105,45 @@ class VectorStoreManager:
         results = self.vector_store.similarity_search(query, k=k)
         return results
     
+    def add_documents(self, documents: List[Document]) -> None:
+        """
+        Add new documents to an existing vector store.
+        
+        Args:
+            documents: List of document chunks to add
+        """
+        if not self.vector_store:
+            raise ValueError("Vector store not initialized. Load it first.")
+        
+        if not documents:
+            print("No documents to add.")
+            return
+        
+        print(f"Adding {len(documents)} new document chunks to vector store...")
+        self.vector_store.add_documents(documents)
+        print("Documents added successfully")
+    
+    def get_existing_sources(self) -> List[str]:
+        """
+        Get list of source filenames already in the vector store.
+        
+        Returns:
+            List of source filenames
+        """
+        if not self.vector_store:
+            raise ValueError("Vector store not initialized. Load it first.")
+        
+        # Get all documents and extract unique sources
+        collection = self.vector_store._collection
+        all_metadata = collection.get()['metadatas']
+        sources = set()
+        
+        for metadata in all_metadata:
+            if metadata and 'source' in metadata:
+                sources.add(metadata['source'])
+        
+        return sorted(list(sources))
+    
     def get_retriever(self, search_kwargs: dict = None):
         """
         Get a retriever instance for use in chains.
